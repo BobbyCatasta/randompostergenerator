@@ -35,11 +35,18 @@ public class CardBehaviour : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     /// <summary>
     /// 
     /// </summary>
+    private bool isInteractable = true;
+
+    /// <summary>
+    /// 
+    /// </summary>
     public CardData CardData => cardData;
 
-    public bool HasBeenResolved;
+    public bool IsFlipped;
 
-    
+
+
+
 
     private void Start()
     {
@@ -56,22 +63,22 @@ public class CardBehaviour : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (HasBeenResolved)
+        if (!isInteractable)
             return;
-        StartCoroutine(FlipCardCoroutine());
+        FlipCardAnimation();
         GameManager.Instance.HasPressedOnCard?.Invoke(this);
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (HasBeenResolved || hasBeenClicked)
+        if (!isInteractable || hasBeenClicked)
             return;
         outlineComponent.effectColor = Color.yellow;
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        if (HasBeenResolved || hasBeenClicked)
+        if (!isInteractable || hasBeenClicked)
             return;
         outlineComponent.effectColor = Color.black;
     }
@@ -81,30 +88,57 @@ public class CardBehaviour : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
         //print($"{cardData.name} Move!");
     }
 
-    public void FlipCardAnimation()
+    public void DelayedFlipCardAnimation()
     {
-        StartCoroutine(FlipCardCoroutine());
+        isInteractable = false;
+        outlineComponent.effectColor = Color.red;
+        StartCoroutine(DelayedFlipCoroutine());
+        //StartCoroutine(FlipCardCoroutine());
     }
 
-    private IEnumerator FlipCardCoroutine()
+    // TO CHANGE 
+    public void FlipCardAnimation()
     {
         if (hasBeenClicked)
         {
+            IsFlipped = false;
             imageComponent.sprite = cardBack;
             outlineComponent.effectColor = Color.black;
             hasBeenClicked = false;
         }
         else
         {
+            IsFlipped = true;
             imageComponent.sprite = cardData.CardSprite;
             hasBeenClicked = true;
         }
-        yield return null;
     }
 
     public void SetResolved()
     {
-        HasBeenResolved = true;
+        isInteractable = true;
         outlineComponent.effectColor = Color.green;
     }
+
+    private IEnumerator DelayedFlipCoroutine()
+    {
+        yield return new WaitForSecondsRealtime(.5f);
+        FlipCardAnimation();
+        isInteractable = true;
+    }
+
+    public void GuessedCard()
+    {
+        imageComponent.enabled = false;
+        outlineComponent.enabled = false;
+        Destroy(this);
+    }
+
+    public void SkipDelayed() // -> TO USE?
+    {
+        StopCoroutine(DelayedFlipCoroutine());
+        FlipCardAnimation();
+        isInteractable = true;
+    }
+
 }

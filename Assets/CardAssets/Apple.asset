@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cff96b0c2b955c54fac40a4e6ff4ca6f, type: 3}
   m_Name: Apple
   m_EditorClassIdentifier: 
-  cardImage: {fileID: 21300000, guid: fb841f9f4d411024aaecd21d31e2bc68, type: 3}
+  cardSprite: {fileID: 21300000, guid: 07436eb7337b52c40b6529eb215e6c5a, type: 3}

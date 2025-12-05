@@ -9,10 +9,10 @@ public class CardData : ScriptableObject
     /// <summary>
     /// Image that will be displayed on the card when assigning this scriptable to CardBehaviour.
     /// </summary>
-    [SerializeField] private Sprite cardImage;
+    [SerializeField] private Sprite cardSprite;
 
     /// <summary>
     /// Sprite of the card that will be displayed.
     /// </summary>
-    public Sprite CardImage => cardImage;
+    public Sprite CardSprite => cardSprite;
 }

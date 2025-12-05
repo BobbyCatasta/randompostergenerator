@@ -6,12 +6,13 @@ using UnityEngine.UI;
 
 public class CardGenerator : MonoBehaviour
 {
+    // Temp NRows and Columns
     [Range(1,10)][SerializeField] private int nOfColumns;
     [Range(1,10)][SerializeField] private int nOfRows;
 
-    [SerializeField] private float MIN_CELL_SIZE = 50;
+    [Min(10)][SerializeField] private float MIN_CELL_SIZE = 30;
     [SerializeField] private float MAX_CELL_SIZE = 200;
-    [SerializeField] private float MIN_SPACING = 20;
+    [Min(10)][SerializeField] private float MIN_SPACING = 30;
     [SerializeField] private float MAX_SPACING = 200;
 
     [SerializeField] private CardData templateDataCard;
@@ -21,8 +22,9 @@ public class CardGenerator : MonoBehaviour
 
 
 
-    private void Start()
+    private IEnumerator Start()
     {
+        yield return new WaitForEndOfFrame();
         GenerateCards(); //DEBUG PURPOSE ONLY
     }
     public void GenerateCards()
@@ -40,8 +42,6 @@ public class CardGenerator : MonoBehaviour
 
     private void SetSpacingAndColumns()
     { 
-        
-
         // Calculating the space for all cards
         RectTransform rect = gridLayout.GetComponent<RectTransform>();
 
@@ -76,5 +76,13 @@ public class CardGenerator : MonoBehaviour
 
         gridLayout.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
         gridLayout.constraintCount = nOfColumns;
+    }
+
+    private void OnValidate()
+    {
+        if(MAX_CELL_SIZE < MIN_CELL_SIZE)
+            MAX_CELL_SIZE = MIN_CELL_SIZE;
+        if(MAX_SPACING < MIN_SPACING)
+            MAX_SPACING = MIN_SPACING;
     }
 }

@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Security.Cryptography;
-using System.Xml.Linq;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using Random = UnityEngine.Random;
 
 public class CardGenerator : MonoBehaviour
 {
@@ -14,12 +9,12 @@ public class CardGenerator : MonoBehaviour
     [Min(10)][SerializeField] private float MIN_SPACING = 30;
     [SerializeField] private float MAX_SPACING = 200;
 
-    [SerializeField] private List<CardData> cardSeeds;
     [SerializeField] private CardBehaviour cardPrefab;
     [SerializeField] private GridLayoutGroup gridLayout;
 
+    private List<CardBehaviour> cardsInGame = new List<CardBehaviour>();
 
-
+    public IReadOnlyList<CardBehaviour> CardsInGame => cardsInGame;
 
     /// <summary>
     /// 
@@ -31,77 +26,27 @@ public class CardGenerator : MonoBehaviour
             MAX_CELL_SIZE = MIN_CELL_SIZE;
         if (MAX_SPACING < MIN_SPACING)
             MAX_SPACING = MIN_SPACING;
+    }
 
-        // Check Unique Seeds
-        if (cardSeeds == null) return;
-
-        for (int i = cardSeeds.Count - 1; i >= 0; i--)
+    public void SetSuits(Queue<CardData> queueSuits)
+    {
+        foreach(CardBehaviour card in cardsInGame)
         {
-            var item = cardSeeds[i];
-
-            if (cardSeeds.IndexOf(item) != i)
-                cardSeeds.RemoveAt(i);
+            card.InitializeCard(queueSuits.Dequeue());
         }
     }
 
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <returns></returns>
-    private Queue<CardData> GenerateSeeds(in int numberOfCards)
+    public void GenerateCards(in int nOfRows, in int nOfColumns)
     {
-        List<CardData> selectedCardSeeds = new List<CardData>();
-        List<CardData> currentPossibleSeeds = new List<CardData>(cardSeeds);
-        for(int i = 0; i < numberOfCards/2; i++)
-        {
-            int randomIndex = Random.Range(0, currentPossibleSeeds.Count - 1);
-            for(int j = 0; j < 2; j++)
-                selectedCardSeeds.Add(currentPossibleSeeds[randomIndex]);
-            currentPossibleSeeds.RemoveAt(randomIndex);
-        }
-        ShuffleSeeds(ref selectedCardSeeds);
-        return new Queue<CardData>(selectedCardSeeds);
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="list"></param>
-    private void ShuffleSeeds(ref List<CardData> list)
-    {
-        for (int i = list.Count - 1; i > 0; i--)
-        {
-            int j = UnityEngine.Random.Range(0, i + 1);
-            (list[i], list[j]) = (list[j], list[i]);
-        }
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="nOfColumns"></param>
-    /// <param name="nOfRows"></param>
-    /// <returns></returns>
-    public IEnumerable<CardBehaviour> GenerateCards(in int nOfColumns,in  int nOfRows)
-    {
-        foreach(Transform element in gridLayout.transform)
-        {
-            Destroy(element.gameObject); // Optimize, instead of destroying, just replace images if replay.
-        }
+        cardsInGame.Clear();
         int numberOfCards = nOfColumns * nOfRows;
+        SetSpacingAndColumns(nOfColumns, nOfRows);
 
-        Queue<CardData> cardQueue = GenerateSeeds(numberOfCards);
-        SetSpacingAndColumns(nOfColumns,nOfRows);
-        List<CardBehaviour> listOfCards = new List<CardBehaviour>();
-
-        for(int i = 0;i < numberOfCards; i ++)
+        for (int i = 0; i < numberOfCards; i++)
         {
             CardBehaviour card = Instantiate(cardPrefab, gridLayout.transform);
-            card.InitializeCard(cardQueue.Dequeue());
-            listOfCards.Add(card);
+            cardsInGame.Add(card);
         }
-        return listOfCards;
     }
 
     /// <summary>

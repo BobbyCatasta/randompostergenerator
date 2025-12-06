@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class MatchTextManager : MonoBehaviour
+public class GameTextManager : MonoBehaviour
 {
     [SerializeField] private TMP_Text pointsText;
     [SerializeField] private TMP_Text turnText;

@@ -1,89 +1,118 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using UnityEngine;
 
 public class GameManager : Singleton<GameManager>
 {
     [Header("Game Manager Data")]
     [SerializeField] private CardGenerator cardGenerator;
-    [SerializeField] private MatchTextManager matchTextManager;
+    [SerializeField] private RandomSuitGenerator randomSuitGenerator;
+    [SerializeField] private GameTextManager gameTextManager;
 
-    public Action<CardBehaviour> HasPressedOnCard;
-    public Action GameStart;
+    private MatchSystem matchSystem;
+
     public Action GameEnded;
-    private CardBehaviour currentlyHeldCard;
 
-    private List<CardBehaviour> cardsInGame; // -> SERVE DAVVERO?
+    private int nColumns = 4;
+    private int nRows = 4;
+
     private int points;
     private int turn;
-    private int matchesCounter;
-    private int numberOfMatches;
 
-    // COMBO
     private int pointIncrease = 1;
 
-    // Number of Columns and Rows
-    // Score and Turns
-    // Currently Selected Card and Compare On Click
-    // Start is called before the first frame update
+    public Action<CardBehaviour> HasPressedOnCard;
+
+
+    private bool xRayEnabled;
+   
 
     /// <summary>
     /// 
     /// </summary>
     /// <returns></returns>
+    /// 
+    protected override void Awake()
+    {
+        base.Awake();
+        matchSystem = new MatchSystem();
+    }
     IEnumerator Start()
     {
         yield return new WaitForEndOfFrame();
+        cardGenerator.GenerateCards(nColumns, nRows);
         StartGame();
     }
 
     /// <summary>
     /// 
     /// </summary>
-    public void CheatXRay(bool isEnabling)
+    public void ToggleXRay()
     {
-        foreach(CardBehaviour element in cardsInGame)
-        {
-            if (isEnabling)
-            {
-                if (!element.IsFlipped)
-                    element.FlipCardAnimation();
-            }
-            else
-            {
-                if (element == currentlyHeldCard)
-                    continue;
-                element.FlipCardAnimation();
-            }
-        }
+        if (matchSystem.IsAnimating)
+            return;
+        xRayEnabled = !xRayEnabled;
+        CheatXRay(xRayEnabled);
     }
 
     private void OnEnable()
     {
         HasPressedOnCard += OnHasPressedCard;
+
+        matchSystem.OnMatchFound += OnMatchFound;
+        matchSystem.OnMismatch += OnMismatch;
+        matchSystem.OnAllPairsCompleted += OnGameCompleted;
+    }
+
+    private void OnGameCompleted()
+    {
+        GameEnded?.Invoke();
+    }
+
+    private void OnMismatch(CardBehaviour firstCard, CardBehaviour secondCard)
+    {
+        AdvanceTurn();
+        pointIncrease = 1;
+    }
+
+    private void OnMatchFound(CardBehaviour firstCard, CardBehaviour secondCard)
+    {
+        AdvanceTurn();
+        points += pointIncrease;
+        gameTextManager.UpdatePointsText(points);
+        pointIncrease++;
+    }
+
+    private void AdvanceTurn()
+    {
+        turn++;
+        gameTextManager.UpdateTurnText(turn);
     }
 
     private void OnDisable()
     {
         HasPressedOnCard -= OnHasPressedCard;
+
+        matchSystem.OnMatchFound -= OnMatchFound;
+        matchSystem.OnMismatch -= OnMismatch;
+        matchSystem.OnAllPairsCompleted -= OnGameCompleted;
     }
 
     public void StartGame()
     {
-        GameStart?.Invoke();
-
         points = 0;
         pointIncrease = 1;
         turn = 0;
-        matchesCounter = 0;
 
-        matchTextManager.UpdatePointsText(points);
-        matchTextManager.UpdateTurnText(turn);
+        gameTextManager.UpdatePointsText(points);
+        gameTextManager.UpdateTurnText(turn);
 
-        cardsInGame = cardGenerator.GenerateCards(4, 4) as List<CardBehaviour>;
-        numberOfMatches = cardsInGame.Count / 2;
+        int numberOfCards = nColumns * nRows;
+
+        matchSystem.Initialize(numberOfCards);
+        Queue<CardData> queueCards = randomSuitGenerator.GenerateRandomizedSuits(numberOfCards);
+        cardGenerator.SetSuits(queueCards);
     }
 
     /// <summary>
@@ -92,48 +121,33 @@ public class GameManager : Singleton<GameManager>
     /// <param name="cardPressed"></param>
     private void OnHasPressedCard(CardBehaviour cardPressed)
     {
-        if (!currentlyHeldCard)
-        {
-            currentlyHeldCard = cardPressed;
-            return;
-        }
-
-        if(currentlyHeldCard == cardPressed)
-            return;
-
-        if(currentlyHeldCard.CardData == cardPressed.CardData)
-        {
-            cardsInGame.Remove(currentlyHeldCard);
-            cardsInGame.Remove(cardPressed);
-
-            currentlyHeldCard.GuessedCard();
-            cardPressed.GuessedCard();
-
-            points += pointIncrease;
-            pointIncrease++;
-            matchesCounter++;
-
-            matchTextManager.UpdatePointsText(points);
-            CheckGameOver();
-        }
-        else
-        {
-            pointIncrease = 1;
-            currentlyHeldCard.DelayedFlipCardAnimation();
-            cardPressed.DelayedFlipCardAnimation();
-        }
-        turn++;
-        matchTextManager.UpdateTurnText(turn);
-        currentlyHeldCard = null;
+        matchSystem.HandleCardSelected(cardPressed);
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    private void CheckGameOver()
+    public Coroutine StartRoutine(IEnumerator routine)
     {
-        if (matchesCounter >= numberOfMatches)
-            GameEnded?.Invoke();
-
+        return StartCoroutine(routine);
     }
+
+
+    private void CheatXRay(bool isEnabled)
+    {
+        foreach (var card in cardGenerator.CardsInGame)
+        {
+            if (!card.IsInteractable)
+                continue;
+
+            if (isEnabled)
+            {
+                if (!card.IsFlipped)
+                    card.ShowFront(false);
+            }
+            else
+            {
+                if (!card.WasFlippedByPlayer)
+                    card.ShowBack();
+            }
+        } 
+    }
+
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-[CreateAssetMenu(fileName = "New Card",menuName = "CardGame/Create New Card Type")]
+[CreateAssetMenu(fileName = "New Card",menuName = "Card Game/Create New Card Type")]
 public class CardData : ScriptableObject
 {
     /// <summary>

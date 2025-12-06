@@ -10,7 +10,6 @@ public class CardBehaviour : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     /// <summary>
     /// 
     /// </summary>
-    [SerializeField] private Image imageComponent;
 
     /// <summary>
     /// 
@@ -21,16 +20,17 @@ public class CardBehaviour : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     /// 
     /// </summary>
     private Outline outlineComponent;
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    private Image imageComponent;
 
     /// <summary>
     /// 
     /// </summary>
     private CardData cardData;
 
-    /// <summary>
-    /// 
-    /// </summary>
-    private bool hasBeenClicked;
 
     /// <summary>
     /// 
@@ -42,43 +42,69 @@ public class CardBehaviour : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     /// </summary>
     public CardData CardData => cardData;
 
-    public bool IsFlipped;
+
+    public bool IsFlipped { get; private set; }
+    public bool IsInteractable => isInteractable;
+
+    public bool WasFlippedByPlayer { get; private set; }
 
 
-
-
-
-    private void Start()
+    private void Awake()
     {
+        imageComponent = GetComponent<Image>();
         outlineComponent = GetComponent<Outline>();
-        imageComponent.sprite = cardBack;
         imageComponent.preserveAspect = true;
+    }
+
+    public void ShowFront(bool flippedByPlayer)
+    {
+        imageComponent.sprite = cardData.CardSprite;
+        outlineComponent.effectColor = Color.black;
+        IsFlipped = true;
+        if (flippedByPlayer)
+            WasFlippedByPlayer = true;
+    }
+
+    public void ShowBack()
+    {
+        imageComponent.sprite = cardBack;
+        outlineComponent.effectColor = Color.black;
+        IsFlipped = false;
+    }
+
+    public void DisableCard()
+    {
+        isInteractable = false;
+    }
+
+    public void EnableCard()
+    {
+        isInteractable = true;
     }
 
     public void InitializeCard(CardData data)
     {
-        // Setting up data on this Card Object
         cardData = data;
+        ResetCard();
     }
 
     public void OnPointerClick(PointerEventData eventData)
     {
         if (!isInteractable)
             return;
-        FlipCardAnimation();
         GameManager.Instance.HasPressedOnCard?.Invoke(this);
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (!isInteractable || hasBeenClicked)
+        if (!isInteractable)
             return;
         outlineComponent.effectColor = Color.yellow;
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        if (!isInteractable || hasBeenClicked)
+        if (!isInteractable)
             return;
         outlineComponent.effectColor = Color.black;
     }
@@ -88,57 +114,33 @@ public class CardBehaviour : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
         //print($"{cardData.name} Move!");
     }
 
-    public void DelayedFlipCardAnimation()
+    public void ResetCard()
     {
-        isInteractable = false;
-        outlineComponent.effectColor = Color.red;
-        StartCoroutine(DelayedFlipCoroutine());
-        //StartCoroutine(FlipCardCoroutine());
-    }
-
-    // TO CHANGE 
-    public void FlipCardAnimation()
-    {
-        if (hasBeenClicked)
-        {
-            IsFlipped = false;
-            imageComponent.sprite = cardBack;
-            outlineComponent.effectColor = Color.black;
-            hasBeenClicked = false;
-        }
-        else
-        {
-            IsFlipped = true;
-            imageComponent.sprite = cardData.CardSprite;
-            hasBeenClicked = true;
-        }
-    }
-
-    public void SetResolved()
-    {
+        IsFlipped = false;
         isInteractable = true;
-        outlineComponent.effectColor = Color.green;
+        WasFlippedByPlayer = false;
+
+        imageComponent.enabled = true;
+        outlineComponent.enabled = true;
+
+        imageComponent.sprite = cardBack;
+        outlineComponent.effectColor = Color.black;
     }
 
-    private IEnumerator DelayedFlipCoroutine()
-    {
-        yield return new WaitForSecondsRealtime(.5f);
-        FlipCardAnimation();
-        isInteractable = true;
-    }
-
-    public void GuessedCard()
+    public void HideCard()
     {
         imageComponent.enabled = false;
         outlineComponent.enabled = false;
-        Destroy(this);
     }
 
-    public void SkipDelayed() // -> TO USE?
+    public void ShowMatchFeedback()
     {
-        StopCoroutine(DelayedFlipCoroutine());
-        FlipCardAnimation();
-        isInteractable = true;
+        outlineComponent.effectColor = Color.green;
     }
 
+    public void ShowMismatchFeedback()
+    {
+        outlineComponent.effectColor = Color.red;
+        WasFlippedByPlayer = false;
+    }
 }

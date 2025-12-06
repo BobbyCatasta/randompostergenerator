@@ -339,4 +339,16 @@ public class GameManager : Singleton<GameManager>
     {
         SaveGame();
     }
+
+    /// <summary>
+    /// Saves game when application goes in standBy.
+    /// </summary>
+    void OnApplicationPause(bool paused)
+    {
+        if (paused)
+        {
+            // App messa in background
+            SaveGame();
+        }
+    }
 }

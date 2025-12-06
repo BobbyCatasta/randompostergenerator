@@ -14,6 +14,9 @@ public class CardBehaviour : MonoBehaviour, I_Card,IPointerEnterHandler, IPointe
     [Tooltip("Sprite displayed on the back of the card.")]
     [SerializeField] private Sprite cardBack;
 
+    [Tooltip("Sprite displayed when in Blind Mode, instead of the real suit.")]
+    [SerializeField] private Sprite questionMarkFront;
+
     /// <summary>
     /// Outline component for visual feedback.
     /// </summary>
@@ -33,6 +36,11 @@ public class CardBehaviour : MonoBehaviour, I_Card,IPointerEnterHandler, IPointe
     /// Indicates if the card can be interacted with.
     /// </summary>
     private bool isInteractable = true;
+
+    /// <summary>
+    /// Indicates if the card has been revealead at least once. (For Blind Mode Only!)
+    /// </summary>
+    private bool hasBeenRevealedOnce = false;
 
     /// <summary>
     /// Public accessor for card data.
@@ -85,11 +93,17 @@ public class CardBehaviour : MonoBehaviour, I_Card,IPointerEnterHandler, IPointe
     /// <param name="flippedByPlayer">Whether flipped by player action.</param>
     public void ShowFront(bool flippedByPlayer)
     {
-        imageComponent.sprite = cardData.CardSprite;
+        if(hasBeenRevealedOnce && GameBoot.IsBlindMode)
+            imageComponent.sprite = questionMarkFront;
+        else
+            imageComponent.sprite = cardData.CardSprite;
         outlineComponent.effectColor = Color.black;
         IsFlipped = true;
         if (flippedByPlayer)
+        {
+            hasBeenRevealedOnce = true;
             IsFlippedByPlayer = true;
+        }
     }
 
     /// <summary>
@@ -187,6 +201,7 @@ public class CardBehaviour : MonoBehaviour, I_Card,IPointerEnterHandler, IPointe
     {
         IsFlipped = false;
         isInteractable = true;
+        hasBeenRevealedOnce = false;
         IsFlippedByPlayer = false;
         IsMatched = false;
         imageComponent.enabled = true;

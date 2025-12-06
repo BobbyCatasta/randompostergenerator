@@ -17,4 +17,9 @@ public static class GameBoot
     /// Number of columns for the card grid.
     /// </summary>
     public static int Columns = 4;
+
+    /// <summary>
+    /// Activates the Blind Game Mode
+    /// </summary>
+    public static bool IsBlindMode = false;
 }

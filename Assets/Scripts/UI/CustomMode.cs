@@ -124,4 +124,12 @@ public class CustomMode : MonoBehaviour
         yield return new WaitForSecondsRealtime(1.5f);
         errorTxt.SetActive(false);
     }
+
+    /// <summary>
+    /// Coroutine to display error message temporarily.
+    /// </summary>
+    public void OnChangeBlindMode(bool value)
+    {
+        GameBoot.IsBlindMode = value;
+    }
 }

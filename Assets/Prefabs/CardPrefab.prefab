@@ -90,8 +90,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c48ac9cf14d7e44090b1ce90b7b12dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  imageComponent: {fileID: 4973829989501774653}
   cardBack: {fileID: 21300000, guid: fb841f9f4d411024aaecd21d31e2bc68, type: 3}
+  questionMarkFront: {fileID: 21300000, guid: 943bf877cc26a3445a3ad3e22d624866, type: 3}
 --- !u!114 &7251182574243330659
 MonoBehaviour:
   m_ObjectHideFlags: 0

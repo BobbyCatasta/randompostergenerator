@@ -44,6 +44,7 @@ public class MenuScript : MonoBehaviour
         GameBoot.IsNewGame = true;
         GameBoot.Rows = 3;
         GameBoot.Columns = 4;
+        GameBoot.IsBlindMode = false;
         SceneManager.LoadScene("GameScene");
     }
 
@@ -55,6 +56,7 @@ public class MenuScript : MonoBehaviour
         GameBoot.IsNewGame = true;
         GameBoot.Rows = 4;
         GameBoot.Columns = 5;
+        GameBoot.IsBlindMode = false;
         SceneManager.LoadScene("GameScene");
 
     }
@@ -67,6 +69,7 @@ public class MenuScript : MonoBehaviour
         GameBoot.IsNewGame = true;
         GameBoot.Rows = 6;
         GameBoot.Columns = 6;
+        GameBoot.IsBlindMode = false;
         SceneManager.LoadScene("GameScene");
     }
 

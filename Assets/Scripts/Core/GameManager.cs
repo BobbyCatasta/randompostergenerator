@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : Singleton<GameManager>
 {
@@ -41,9 +42,13 @@ public class GameManager : Singleton<GameManager>
     }
     private void Start()
     {
-        cardGenerator.GenerateCards(nColumns, nRows);
-        if (!LoadGameData())
-            StartGame();           
+        nColumns = GameBoot.Columns;
+        nRows = GameBoot.Rows;
+        cardGenerator.GenerateCards(nRows, nColumns);
+        if (GameBoot.IsNewGame)
+            StartGame();
+        else
+            LoadGame();
     }
 
     /// <summary>
@@ -115,6 +120,7 @@ public class GameManager : Singleton<GameManager>
         matchSystem.Initialize(numberOfCards);
         Queue<CardData> queueCards = randomSuitGenerator.GenerateRandomizedSuits(numberOfCards);
         cardGenerator.SetSuits(queueCards);
+        SaveGame();
     }
 
     /// <summary>
@@ -152,7 +158,7 @@ public class GameManager : Singleton<GameManager>
         SaveSystem.SaveGame(data);
     }
 
-    public bool LoadGameData()
+    public bool LoadGame()
     {
         SaveData saveData = SaveSystem.LoadGame();
         if (saveData == null)
@@ -226,6 +232,11 @@ public class GameManager : Singleton<GameManager>
                     card.ShowBack();
             }
         }
+    }
+
+    public void ReturnToMenu()
+    {
+        SceneManager.LoadScene("MenuScene");
     }
 
 #endif

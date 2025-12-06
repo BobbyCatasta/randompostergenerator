@@ -1,14 +1,19 @@
 using UnityEngine;
 
-
+/// <summary>
+/// Generic singleton pattern implementation for MonoBehaviour classes.
+/// </summary>
+/// <typeparam name="T">The type of the singleton class.</typeparam>
 public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
 {
     #region Data
 
     #region Local
+    /// <summary>
+    /// Static instance of the singleton.
+    /// </summary>
     static T instance;
     #endregion
-
 
     #region Serialized
     [Header("Singleton")]
@@ -16,8 +21,10 @@ public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
     [SerializeField] bool persistent;
     #endregion
 
-
     #region Properties
+    /// <summary>
+    /// Public accessor for the singleton instance.
+    /// </summary>
     public static T Instance
     {
         get
@@ -42,8 +49,10 @@ public abstract class Singleton<T> : MonoBehaviour where T : MonoBehaviour
 
     #endregion
 
-
     #region Mono
+    /// <summary>
+    /// Awake method that ensures singleton pattern integrity.
+    /// </summary>
     protected virtual void Awake()
     {
         if (instance == null)

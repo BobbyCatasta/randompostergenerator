@@ -4,53 +4,74 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
+/// <summary>
+/// MonoBehaviour component representing a card in the matching game.
+/// </summary>
 [RequireComponent(typeof(Image), typeof(Outline))]
 public class CardBehaviour : MonoBehaviour, I_Card,IPointerEnterHandler, IPointerExitHandler, IPointerMoveHandler, IPointerClickHandler
 {
-    /// <summary>
-    /// 
-    /// </summary>
-
-    /// <summary>
-    /// 
-    /// </summary>
+    [Header("Card Visuals")]
+    [Tooltip("Sprite displayed on the back of the card.")]
     [SerializeField] private Sprite cardBack;
 
     /// <summary>
-    /// 
+    /// Outline component for visual feedback.
     /// </summary>
     private Outline outlineComponent;
     
     /// <summary>
-    /// 
+    /// Image component for displaying card sprites.
     /// </summary>
     private Image imageComponent;
 
     /// <summary>
-    /// 
+    /// Data associated with this card.
     /// </summary>
     private CardData cardData;
 
-
     /// <summary>
-    /// 
+    /// Indicates if the card can be interacted with.
     /// </summary>
     private bool isInteractable = true;
 
     /// <summary>
-    /// 
+    /// Public accessor for card data.
     /// </summary>
     public CardData CardData => cardData;
 
-
+    /// <summary>
+    /// Indicates if the card is currently selected.
+    /// </summary>
     public bool IsSelected { get; private set; }
+    
+    /// <summary>
+    /// Indicates if the card is flipped (showing front).
+    /// </summary>
     public bool IsFlipped { get; private set; }
+    
+    /// <summary>
+    /// Indicates if the card has been matched.
+    /// </summary>
     public bool IsMatched { get; private set; }
+    
+    /// <summary>
+    /// Indicates if the card is interactable.
+    /// </summary>
     public bool IsInteractable => isInteractable;
+    
+    /// <summary>
+    /// Indicates if the card was flipped by player action.
+    /// </summary>
     public bool IsFlippedByPlayer { get; private set; }
 
+    /// <summary>
+    /// Unique identifier from card data.
+    /// </summary>
     public string ID => CardData.ID;
 
+    /// <summary>
+    /// Initializes component references.
+    /// </summary>
     private void Awake()
     {
         imageComponent = GetComponent<Image>();
@@ -58,6 +79,10 @@ public class CardBehaviour : MonoBehaviour, I_Card,IPointerEnterHandler, IPointe
         imageComponent.preserveAspect = true;
     }
 
+    /// <summary>
+    /// Shows the front (face) of the card.
+    /// </summary>
+    /// <param name="flippedByPlayer">Whether flipped by player action.</param>
     public void ShowFront(bool flippedByPlayer)
     {
         imageComponent.sprite = cardData.CardSprite;
@@ -67,6 +92,9 @@ public class CardBehaviour : MonoBehaviour, I_Card,IPointerEnterHandler, IPointe
             IsFlippedByPlayer = true;
     }
 
+    /// <summary>
+    /// Shows the back (hidden) of the card.
+    /// </summary>
     public void ShowBack()
     {
         imageComponent.sprite = cardBack;
@@ -75,22 +103,36 @@ public class CardBehaviour : MonoBehaviour, I_Card,IPointerEnterHandler, IPointe
         IsFlippedByPlayer = false;
     }
 
+    /// <summary>
+    /// Disables interaction with the card.
+    /// </summary>
     public void DisableCard()
     {
         isInteractable = false;
     }
 
+    /// <summary>
+    /// Enables interaction with the card.
+    /// </summary>
     public void EnableCard()
     {
         isInteractable = true;
     }
 
+    /// <summary>
+    /// Initializes the card with specific data.
+    /// </summary>
+    /// <param name="data">CardData to assign to this card.</param>
     public void InitializeCard(CardData data)
     {
         cardData = data;
         ResetCard();
     }
 
+    /// <summary>
+    /// Handles click events on the card.
+    /// </summary>
+    /// <param name="eventData">Pointer event data.</param>
     public void OnPointerClick(PointerEventData eventData)
     {
         if (!isInteractable)
@@ -98,6 +140,10 @@ public class CardBehaviour : MonoBehaviour, I_Card,IPointerEnterHandler, IPointe
         GameEvents.OnCardClicked?.Invoke(this);
     }
 
+    /// <summary>
+    /// Handles pointer enter events (hover).
+    /// </summary>
+    /// <param name="eventData">Pointer event data.</param>
     public void OnPointerEnter(PointerEventData eventData)
     {
         if (!isInteractable)
@@ -105,6 +151,10 @@ public class CardBehaviour : MonoBehaviour, I_Card,IPointerEnterHandler, IPointe
         outlineComponent.effectColor = Color.yellow;
     }
 
+    /// <summary>
+    /// Handles pointer exit events (end hover).
+    /// </summary>
+    /// <param name="eventData">Pointer event data.</param>
     public void OnPointerExit(PointerEventData eventData)
     {
         if (!isInteractable)
@@ -112,17 +162,27 @@ public class CardBehaviour : MonoBehaviour, I_Card,IPointerEnterHandler, IPointe
         outlineComponent.effectColor = Color.black;
     }
 
+    /// <summary>
+    /// Handles pointer move events.
+    /// </summary>
+    /// <param name="eventData">Pointer event data.</param>
     public void OnPointerMove(PointerEventData eventData)
     {
         //print($"{cardData.name} Move!");
     }
 
+    /// <summary>
+    /// Marks the card as matched and disables it.
+    /// </summary>
     public void SetMatched()
     {
         IsMatched = true;
         isInteractable = false;
     }
 
+    /// <summary>
+    /// Resets the card to its initial state.
+    /// </summary>
     public void ResetCard()
     {
         IsFlipped = false;
@@ -136,19 +196,27 @@ public class CardBehaviour : MonoBehaviour, I_Card,IPointerEnterHandler, IPointe
         outlineComponent.effectColor = Color.black;
     }
 
+    /// <summary>
+    /// Hides the card completely (used when matched).
+    /// </summary>
     public void HideCard()
     {
         imageComponent.enabled = false;
         outlineComponent.enabled = false;
     }
 
+    /// <summary>
+    /// Shows visual feedback for a successful match.
+    /// </summary>
     public void ShowMatchFeedback()
     {
         outlineComponent.effectColor = Color.green;
         SetMatched();
     }
 
-
+    /// <summary>
+    /// Shows visual feedback for a mismatch.
+    /// </summary>
     public void ShowMismatchFeedback()
     {
         outlineComponent.effectColor = Color.red;

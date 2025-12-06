@@ -1,9 +1,20 @@
 using System.IO;
 using UnityEngine;
 
+/// <summary>
+/// Static class handling game save/load operations.
+/// </summary>
 public static class SaveSystem
 {
+    /// <summary>
+    /// Path to the save file.
+    /// </summary>
     private static string SavePath => Path.Combine(Application.persistentDataPath, "save.json");
+    
+    /// <summary>
+    /// Saves the current game state to a file.
+    /// </summary>
+    /// <param name="saveData">The SaveData object containing game state.</param>
     public static void SaveGame(SaveData saveData)
     {
         string jsonString = JsonUtility.ToJson(saveData,true);
@@ -11,6 +22,9 @@ public static class SaveSystem
         Debug.Log("Game Saved");
     }
 
+    /// <summary>
+    /// Deletes the save file if it exists.
+    /// </summary>
     public static void DeleteSave()
     {
         if (File.Exists(SavePath))
@@ -20,6 +34,10 @@ public static class SaveSystem
         }
     }
 
+    /// <summary>
+    /// Loads game state from save file.
+    /// </summary>
+    /// <returns>Loaded SaveData object, or null if no save exists.</returns>
     public static SaveData LoadGame()
     {
         if (!File.Exists(SavePath))
@@ -33,4 +51,3 @@ public static class SaveSystem
         return saveData;
     }
 }
-

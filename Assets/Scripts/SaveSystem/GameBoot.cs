@@ -1,5 +1,3 @@
-using UnityEngine;
-
 public static class GameBoot 
 {
     public static bool IsNewGame;

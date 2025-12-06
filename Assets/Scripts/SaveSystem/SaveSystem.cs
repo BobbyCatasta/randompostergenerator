@@ -16,7 +16,7 @@ public static class SaveSystem
         if (File.Exists(SavePath))
         {
             File.Delete(SavePath);
-            Debug.Log("Save deleted.");
+            Debug.Log("Save deleted");
         }
     }
 

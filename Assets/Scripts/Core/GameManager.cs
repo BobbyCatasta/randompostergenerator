@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -120,7 +119,6 @@ public class GameManager : Singleton<GameManager>
         matchSystem.Initialize(numberOfCards);
         Queue<CardData> queueCards = randomSuitGenerator.GenerateRandomizedSuits(numberOfCards);
         cardGenerator.SetSuits(queueCards);
-        SaveGame();
     }
 
     /// <summary>
@@ -236,6 +234,7 @@ public class GameManager : Singleton<GameManager>
 
     public void ReturnToMenu()
     {
+        SaveGame();
         SceneManager.LoadScene("MenuScene");
     }
 

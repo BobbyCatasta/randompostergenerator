@@ -30,7 +30,12 @@ public class CardGenerator : MonoBehaviour
 
     public void SetSuits(Queue<CardData> queueSuits)
     {
-        foreach(CardBehaviour card in cardsInGame)
+        if (queueSuits.Count != cardsInGame.Count)
+        {
+            Debug.LogError($"Suit mismatch! Cards: {cardsInGame.Count}, Queue: {queueSuits.Count}");
+            return;
+        }
+        foreach (CardBehaviour card in cardsInGame)
         {
             card.InitializeCard(queueSuits.Dequeue());
         }

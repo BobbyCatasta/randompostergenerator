@@ -25,7 +25,7 @@ public class MenuScript : MonoBehaviour
         GameBoot.IsNewGame = true;
         GameBoot.Rows = 3;
         GameBoot.Columns = 4;
-        LoadGame();
+        SceneManager.LoadScene("GameScene");
     }
 
     public void OnMediumSelection()
@@ -33,8 +33,8 @@ public class MenuScript : MonoBehaviour
         GameBoot.IsNewGame = true;
         GameBoot.Rows = 4;
         GameBoot.Columns = 5;
-        LoadGame();
-        
+        SceneManager.LoadScene("GameScene");
+
     }
 
     public void OnHardSelection()
@@ -42,7 +42,7 @@ public class MenuScript : MonoBehaviour
         GameBoot.IsNewGame = true;
         GameBoot.Rows = 6;
         GameBoot.Columns = 6;
-        LoadGame();
+        SceneManager.LoadScene("GameScene");
     }
 
 

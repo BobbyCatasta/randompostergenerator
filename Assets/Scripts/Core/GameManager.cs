@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using UnityEngine;
 
 public class GameManager : Singleton<GameManager>
@@ -24,7 +25,6 @@ public class GameManager : Singleton<GameManager>
 
     public Action<CardBehaviour> HasPressedOnCard;
 
-
     private bool xRayEnabled;
    
 
@@ -37,12 +37,13 @@ public class GameManager : Singleton<GameManager>
     {
         base.Awake();
         matchSystem = new MatchSystem();
+        randomSuitGenerator.Initialize();
     }
-    IEnumerator Start()
+    private void Start()
     {
-        yield return new WaitForEndOfFrame();
         cardGenerator.GenerateCards(nColumns, nRows);
-        StartGame();
+        if (!LoadGameData())
+            StartGame();           
     }
 
     /// <summary>
@@ -68,6 +69,7 @@ public class GameManager : Singleton<GameManager>
     private void OnGameCompleted()
     {
         GameEnded?.Invoke();
+        SaveSystem.DeleteSave();
     }
 
     private void OnMismatch(CardBehaviour firstCard, CardBehaviour secondCard)
@@ -130,6 +132,82 @@ public class GameManager : Singleton<GameManager>
     }
 
 
+    public void SaveGame()
+    {
+        SaveData data = new SaveData();
+
+        data.nColumns = nColumns;
+        data.nRows = nRows;
+        data.cardsState = new List<CardState>();
+
+        foreach (var card in cardGenerator.CardsInGame)
+        {
+            var cardState = new CardState(card.CardData.ID, card.IsFlippedByPlayer, card.IsMatched,card == matchSystem.FirstCard);
+            data.cardsState.Add(cardState);
+        }
+        data.turn = turn;
+        data.pointIncrease = pointIncrease;
+        data.points = points;
+
+        SaveSystem.SaveGame(data);
+    }
+
+    public bool LoadGameData()
+    {
+        SaveData saveData = SaveSystem.LoadGame();
+        if (saveData == null)
+            return false;
+
+        nRows = saveData.nRows;
+        nColumns = saveData.nColumns;
+        turn = saveData.turn;
+        points = saveData.points;
+        pointIncrease = saveData.pointIncrease;
+
+        gameTextManager.UpdatePointsText(points);
+        gameTextManager.UpdateTurnText(turn);
+
+        Queue<CardData> queue = new Queue<CardData>();
+
+        foreach (var cardState in saveData.cardsState)
+        {
+            CardData seed = randomSuitGenerator.GetCardByID(cardState.suitID);
+            queue.Enqueue(seed);
+        }
+        cardGenerator.SetSuits(queue);
+
+        int cardsMatched = 0;
+        for (int i = 0; i < saveData.cardsState.Count; i++)
+        {
+            var card = cardGenerator.CardsInGame[i];
+            var state = saveData.cardsState[i];
+
+            if (state.isMatched)
+            {
+                card.SetMatched();
+                card.HideCard();
+                cardsMatched++;
+                continue;
+            }
+            if (state.hasBeenSelected)
+            {
+                card.ShowFront(true);
+                matchSystem.RestoreFirstSelection(card);
+                continue;
+            }
+            if (state.flippedByPlayer)
+            {
+                card.ShowFront(false);
+                continue;
+            }
+            card.ShowBack();
+
+        }
+        matchSystem.Initialize(nRows * nColumns, cardsMatched / 2);
+        return true;
+    }
+
+#if UNITY_EDITOR
     private void CheatXRay(bool isEnabled)
     {
         foreach (var card in cardGenerator.CardsInGame)
@@ -139,15 +217,21 @@ public class GameManager : Singleton<GameManager>
 
             if (isEnabled)
             {
-                if (!card.IsFlipped)
+                if (!card.IsMatched)
                     card.ShowFront(false);
             }
             else
             {
-                if (!card.WasFlippedByPlayer)
+                if (!card.IsFlippedByPlayer && !card.IsMatched)
                     card.ShowBack();
             }
-        } 
+        }
     }
 
+#endif
+
+    private void OnApplicationQuit()
+    {
+        SaveGame();
+    }
 }

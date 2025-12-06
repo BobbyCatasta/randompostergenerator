@@ -4,21 +4,37 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Card Suits",menuName = "Card Game/SuitGenerator")]
 public class RandomSuitGenerator : ScriptableObject
 {
-    [SerializeField] private List<CardData> cardSeeds;
+    [SerializeField] private List<CardData> cardSuits;
+    public Dictionary<string, CardData> IDSuitToSuit { get; private set; }
 
+    public void Initialize()
+    {
+        IDSuitToSuit = new Dictionary<string, CardData>();
+
+        foreach (var seed in cardSuits)
+        {
+            if (!IDSuitToSuit.ContainsKey(seed.ID))
+                IDSuitToSuit.Add(seed.ID, seed);
+        }
+    }
 
     private void OnValidate()
     {
-        // Check Unique Seeds
-        if (cardSeeds == null) return;
+        // Check Unique Suits
+        if (cardSuits == null) return;
 
-        for (int i = cardSeeds.Count - 1; i >= 0; i--)
+        for (int i = cardSuits.Count - 1; i >= 0; i--)
         {
-            var item = cardSeeds[i];
+            var item = cardSuits[i];
 
-            if (cardSeeds.IndexOf(item) != i)
-                cardSeeds.RemoveAt(i);
+            if (cardSuits.IndexOf(item) != i)
+                cardSuits.RemoveAt(i);
         }
+    }
+
+    public CardData GetCardByID(string id)
+    {
+        return IDSuitToSuit[id];
     }
 
 
@@ -41,13 +57,13 @@ public class RandomSuitGenerator : ScriptableObject
     /// <returns></returns>
     public Queue<CardData> GenerateRandomizedSuits(in int numberOfCards)
     {
-        if (numberOfCards / 2 > cardSeeds.Count)
+        if (numberOfCards / 2 > cardSuits.Count)
         {
             Debug.LogError("Not enough suits to generate pairs");
             return null;
         }
         List<CardData> selectedCardSeeds = new List<CardData>();
-        List<CardData> currentPossibleSeeds = new List<CardData>(cardSeeds);
+        List<CardData> currentPossibleSeeds = new List<CardData>(cardSuits);
 
         for (int i = 0; i < numberOfCards / 2; i++)
         {

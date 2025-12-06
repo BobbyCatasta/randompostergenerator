@@ -43,10 +43,11 @@ public class CardBehaviour : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     public CardData CardData => cardData;
 
 
+    public bool IsSelected { get; private set; }
     public bool IsFlipped { get; private set; }
+    public bool IsMatched { get; private set; }
     public bool IsInteractable => isInteractable;
-
-    public bool WasFlippedByPlayer { get; private set; }
+    public bool IsFlippedByPlayer { get; private set; }
 
 
     private void Awake()
@@ -62,7 +63,7 @@ public class CardBehaviour : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
         outlineComponent.effectColor = Color.black;
         IsFlipped = true;
         if (flippedByPlayer)
-            WasFlippedByPlayer = true;
+            IsFlippedByPlayer = true;
     }
 
     public void ShowBack()
@@ -70,6 +71,7 @@ public class CardBehaviour : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
         imageComponent.sprite = cardBack;
         outlineComponent.effectColor = Color.black;
         IsFlipped = false;
+        IsFlippedByPlayer = false;
     }
 
     public void DisableCard()
@@ -114,12 +116,18 @@ public class CardBehaviour : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
         //print($"{cardData.name} Move!");
     }
 
+    public void SetMatched()
+    {
+        IsMatched = true;
+        isInteractable = false;
+    }
+
     public void ResetCard()
     {
         IsFlipped = false;
         isInteractable = true;
-        WasFlippedByPlayer = false;
-
+        IsFlippedByPlayer = false;
+        IsMatched = false;
         imageComponent.enabled = true;
         outlineComponent.enabled = true;
 
@@ -136,11 +144,13 @@ public class CardBehaviour : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     public void ShowMatchFeedback()
     {
         outlineComponent.effectColor = Color.green;
+        SetMatched();
     }
+
 
     public void ShowMismatchFeedback()
     {
         outlineComponent.effectColor = Color.red;
-        WasFlippedByPlayer = false;
+        IsFlippedByPlayer = false;
     }
 }

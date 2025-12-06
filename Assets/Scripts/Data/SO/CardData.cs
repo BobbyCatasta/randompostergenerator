@@ -11,6 +11,8 @@ public class CardData : ScriptableObject
     /// </summary>
     [SerializeField] private Sprite cardSprite;
 
+    public string ID;
+
     /// <summary>
     /// Sprite of the card that will be displayed.
     /// </summary>

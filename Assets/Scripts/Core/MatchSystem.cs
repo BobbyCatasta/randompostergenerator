@@ -18,25 +18,21 @@ public class MatchSystem
 
     public bool IsAnimating { get; private set; }
 
-    public void Initialize(in int numberOfCards)
+    public CardBehaviour FirstCard => firstCard;
+
+    public void Initialize(in int numberOfCards, int matchedPairs = 0)
     {
-        matchedPairs = 0;
+        this.matchedPairs = matchedPairs;
         totalPairs = numberOfCards / 2;
 
-        firstCard = null;
         secondCard = null;
         IsAnimating = false;
     }
 
     public void HandleCardSelected(CardBehaviour card)
     {
-
         if (card == firstCard)
-        {
-            firstCard.ShowBack();
-            firstCard = null;
             return;
-        }
 
         if (firstCard == null)
         {
@@ -71,6 +67,11 @@ public class MatchSystem
             OnMismatch?.Invoke(firstCard, secondCard);
             GameManager.Instance.StartRoutine(FlipBackCoroutine());
         }
+    }
+
+    public void RestoreFirstSelection(CardBehaviour card)
+    {
+        firstCard = card;
     }
 
     private IEnumerator FlipBackCoroutine()

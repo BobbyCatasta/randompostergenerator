@@ -43,7 +43,6 @@ public class GameManager : Singleton<GameManager>
     {
         nColumns = GameBoot.Columns;
         nRows = GameBoot.Rows;
-        cardGenerator.GenerateCards(nRows, nColumns);
         if (GameBoot.IsNewGame)
             StartGame();
         else
@@ -72,6 +71,7 @@ public class GameManager : Singleton<GameManager>
 
     private void OnGameCompleted()
     {
+        AudioManager.Instance.PlaySound(MatchingCardsSound.GameOver);
         GameEnded?.Invoke();
         SaveSystem.DeleteSave();
     }
@@ -118,7 +118,7 @@ public class GameManager : Singleton<GameManager>
 
         matchSystem.Initialize(numberOfCards);
         Queue<CardData> queueCards = randomSuitGenerator.GenerateRandomizedSuits(numberOfCards);
-        cardGenerator.SetSuits(queueCards);
+        cardGenerator.GenerateCardsAndSuits(nRows, nColumns,queueCards);
     }
 
     /// <summary>
@@ -171,14 +171,16 @@ public class GameManager : Singleton<GameManager>
         gameTextManager.UpdatePointsText(points);
         gameTextManager.UpdateTurnText(turn);
 
-        Queue<CardData> queue = new Queue<CardData>();
+        List<CardData> suitList = new List<CardData>();
 
         foreach (var cardState in saveData.cardsState)
         {
-            CardData seed = randomSuitGenerator.GetCardByID(cardState.suitID);
-            queue.Enqueue(seed);
+            CardData suit = randomSuitGenerator.GetCardByID(cardState.suitID);
+            suitList.Add(suit);
         }
-        cardGenerator.SetSuits(queue);
+
+        Queue<CardData> queueSuits = new Queue<CardData>(suitList);
+        cardGenerator.GenerateCardsAndSuits(nRows, nColumns, queueSuits);
 
         int cardsMatched = 0;
         for (int i = 0; i < saveData.cardsState.Count; i++)

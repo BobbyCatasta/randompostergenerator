@@ -56,7 +56,7 @@ public class MatchSystem
         {
             matchedPairs++;
             OnMatchFound?.Invoke(firstCard, secondCard);
-
+            AudioManager.Instance.PlaySound(MatchingCardsSound.Match);
             GameManager.Instance.StartRoutine(HideCardCoroutine());
 
             if (matchedPairs >= totalPairs)
@@ -64,6 +64,7 @@ public class MatchSystem
         }
         else
         {
+            AudioManager.Instance.PlaySound(MatchingCardsSound.Mismatch);
             OnMismatch?.Invoke(firstCard, secondCard);
             GameManager.Instance.StartRoutine(FlipBackCoroutine());
         }

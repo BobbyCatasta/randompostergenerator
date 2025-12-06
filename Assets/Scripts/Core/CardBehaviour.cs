@@ -59,6 +59,7 @@ public class CardBehaviour : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
     public void ShowFront(bool flippedByPlayer)
     {
+        AudioManager.Instance.PlaySound(MatchingCardsSound.CardFlip);
         imageComponent.sprite = cardData.CardSprite;
         outlineComponent.effectColor = Color.black;
         IsFlipped = true;

@@ -8,30 +8,30 @@ public class AudioManager : Singleton<AudioManager>
     [SerializeField] private AudioClip mismatch;
     [SerializeField] private AudioClip gameOver;
 
-    public void Play(SoundType type)
+    public void PlaySound(MatchingCardsSound type)
     {
         switch (type)
         {
-            case SoundType.CardFlip:
+            case MatchingCardsSound.CardFlip:
                 source.PlayOneShot(cardFlip);
                 break;
 
-            case SoundType.Match:
+            case MatchingCardsSound.Match:
                 source.PlayOneShot(match);
                 break;
 
-            case SoundType.Mismatch:
+            case MatchingCardsSound.Mismatch:
                 source.PlayOneShot(mismatch);
                 break;
 
-            case SoundType.GameOver:
+            case MatchingCardsSound.GameOver:
                 source.PlayOneShot(gameOver);
                 break;
         }
     }
 }
 
-public enum SoundType
+public enum MatchingCardsSound
 {
     CardFlip,
     Match,

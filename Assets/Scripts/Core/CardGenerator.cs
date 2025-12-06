@@ -41,7 +41,7 @@ public class CardGenerator : MonoBehaviour
         }
     }
 
-    public void GenerateCards(in int nOfRows, in int nOfColumns)
+    private void GenerateCards(in int nOfRows, in int nOfColumns)
     {
         cardsInGame.Clear();
         int numberOfCards = nOfColumns * nOfRows;
@@ -52,6 +52,12 @@ public class CardGenerator : MonoBehaviour
             CardBehaviour card = Instantiate(cardPrefab, gridLayout.transform);
             cardsInGame.Add(card);
         }
+    }
+
+    public void GenerateCardsAndSuits(in int nOfRows, in int nOfColumns, in Queue<CardData> queueSuits)
+    {
+        GenerateCards(nOfRows, nOfColumns);
+        SetSuits(queueSuits);
     }
 
     /// <summary>

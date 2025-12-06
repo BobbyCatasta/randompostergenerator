@@ -13,8 +13,6 @@ public class GameManager : Singleton<GameManager>
 
     private MatchSystem matchSystem;
 
-    public Action GameEnded;
-
     private int nColumns = 4;
     private int nRows = 4;
 
@@ -22,8 +20,6 @@ public class GameManager : Singleton<GameManager>
     private int turn;
 
     private int pointIncrease = 1;
-
-    public Action<CardBehaviour> HasPressedOnCard;
 
     private bool xRayEnabled;
    
@@ -62,27 +58,39 @@ public class GameManager : Singleton<GameManager>
 
     private void OnEnable()
     {
-        HasPressedOnCard += OnHasPressedCard;
+        GameEvents.OnCardClicked += OnHasPressedCard;
 
         matchSystem.OnMatchFound += OnMatchFound;
         matchSystem.OnMismatch += OnMismatch;
         matchSystem.OnAllPairsCompleted += OnGameCompleted;
     }
 
+
+    private void OnDisable()
+    {
+        GameEvents.OnCardClicked -= OnHasPressedCard;
+
+        matchSystem.OnMatchFound -= OnMatchFound;
+        matchSystem.OnMismatch -= OnMismatch;
+        matchSystem.OnAllPairsCompleted -= OnGameCompleted;
+    }
+
     private void OnGameCompleted()
     {
         AudioManager.Instance.PlaySound(MatchingCardsSound.GameOver);
-        GameEnded?.Invoke();
+        GameEvents.GameEnded?.Invoke();
         SaveSystem.DeleteSave();
     }
 
-    private void OnMismatch(CardBehaviour firstCard, CardBehaviour secondCard)
+
+
+    private void OnMismatch()
     {
         AdvanceTurn();
         pointIncrease = 1;
     }
 
-    private void OnMatchFound(CardBehaviour firstCard, CardBehaviour secondCard)
+    private void OnMatchFound()
     {
         AdvanceTurn();
         points += pointIncrease;
@@ -95,16 +103,6 @@ public class GameManager : Singleton<GameManager>
         turn++;
         gameTextManager.UpdateTurnText(turn);
     }
-
-    private void OnDisable()
-    {
-        HasPressedOnCard -= OnHasPressedCard;
-
-        matchSystem.OnMatchFound -= OnMatchFound;
-        matchSystem.OnMismatch -= OnMismatch;
-        matchSystem.OnAllPairsCompleted -= OnGameCompleted;
-    }
-
     public void StartGame()
     {
         points = 0;
@@ -125,9 +123,10 @@ public class GameManager : Singleton<GameManager>
     /// 
     /// </summary>
     /// <param name="cardPressed"></param>
-    private void OnHasPressedCard(CardBehaviour cardPressed)
+    private void OnHasPressedCard(I_Card cardPressed)
     {
-        matchSystem.HandleCardSelected(cardPressed);
+        matchSystem.HandleCardSelected(cardPressed as CardBehaviour);
+        AudioManager.Instance.PlaySound(MatchingCardsSound.CardFlip);
     }
 
     public Coroutine StartRoutine(IEnumerator routine)

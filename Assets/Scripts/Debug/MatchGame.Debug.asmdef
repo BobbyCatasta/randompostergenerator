@@ -1,0 +1,17 @@
+{
+    "name": "MatchGame.Debug",
+    "rootNamespace": "",
+    "references": [
+        "GUID:45f4ce45060b49640b2c6422c2e6bd51",
+        "GUID:e5fe43b177bec904687250a23e0979a6"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

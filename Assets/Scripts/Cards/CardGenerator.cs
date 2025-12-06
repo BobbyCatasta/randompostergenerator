@@ -56,7 +56,8 @@ public class CardGenerator : MonoBehaviour
 
     public void GenerateCardsAndSuits(in int nOfRows, in int nOfColumns, in Queue<CardData> queueSuits)
     {
-        GenerateCards(nOfRows, nOfColumns);
+        if(cardsInGame.Count <= 0)
+            GenerateCards(nOfRows, nOfColumns);
         SetSuits(queueSuits);
     }
 

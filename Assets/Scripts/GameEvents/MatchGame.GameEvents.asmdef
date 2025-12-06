@@ -1,0 +1,16 @@
+{
+    "name": "MatchGame.GameEvents",
+    "rootNamespace": "",
+    "references": [
+        "GUID:68ce61000ee1e564e8b3591315a4c617"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

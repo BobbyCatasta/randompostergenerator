@@ -1,0 +1,16 @@
+{
+    "name": "MatchGame.Audio",
+    "rootNamespace": "",
+    "references": [
+        "GUID:e5fe43b177bec904687250a23e0979a6"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

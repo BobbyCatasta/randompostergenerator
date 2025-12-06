@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Image), typeof(Outline))]
-public class CardBehaviour : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerMoveHandler, IPointerClickHandler
+public class CardBehaviour : MonoBehaviour, I_Card,IPointerEnterHandler, IPointerExitHandler, IPointerMoveHandler, IPointerClickHandler
 {
     /// <summary>
     /// 
@@ -49,6 +49,7 @@ public class CardBehaviour : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     public bool IsInteractable => isInteractable;
     public bool IsFlippedByPlayer { get; private set; }
 
+    public string ID => CardData.ID;
 
     private void Awake()
     {
@@ -59,7 +60,6 @@ public class CardBehaviour : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
     public void ShowFront(bool flippedByPlayer)
     {
-        AudioManager.Instance.PlaySound(MatchingCardsSound.CardFlip);
         imageComponent.sprite = cardData.CardSprite;
         outlineComponent.effectColor = Color.black;
         IsFlipped = true;
@@ -95,7 +95,7 @@ public class CardBehaviour : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     {
         if (!isInteractable)
             return;
-        GameManager.Instance.HasPressedOnCard?.Invoke(this);
+        GameEvents.OnCardClicked?.Invoke(this);
     }
 
     public void OnPointerEnter(PointerEventData eventData)

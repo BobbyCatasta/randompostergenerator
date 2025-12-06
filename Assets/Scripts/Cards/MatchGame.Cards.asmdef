@@ -1,0 +1,19 @@
+{
+    "name": "Game.Cards",
+    "rootNamespace": "",
+    "references": [
+        "GUID:f11ef5d8e633e3a478186d42df4cbea9",
+        "GUID:e5fe43b177bec904687250a23e0979a6",
+        "GUID:58b3350a3065df5408c29150c434e5ec",
+        "GUID:68ce61000ee1e564e8b3591315a4c617"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -4,13 +4,13 @@ using UnityEngine;
 
 public class MatchSystem
 {
-    private CardBehaviour firstCard;
-    private CardBehaviour secondCard;
+    private I_Card firstCard;
+    private I_Card secondCard;
 
     private float flipBackDelay = .4f;
 
-    public event Action<CardBehaviour, CardBehaviour> OnMatchFound;
-    public event Action<CardBehaviour, CardBehaviour> OnMismatch;
+    public event Action OnMatchFound;
+    public event Action OnMismatch;
     public event Action OnAllPairsCompleted;
 
     private int totalPairs;
@@ -18,7 +18,7 @@ public class MatchSystem
 
     public bool IsAnimating { get; private set; }
 
-    public CardBehaviour FirstCard => firstCard;
+    public I_Card FirstCard => firstCard;
 
     public void Initialize(in int numberOfCards, int matchedPairs = 0)
     {
@@ -29,7 +29,7 @@ public class MatchSystem
         IsAnimating = false;
     }
 
-    public void HandleCardSelected(CardBehaviour card)
+    public void HandleCardSelected(I_Card card)
     {
         if (card == firstCard)
             return;
@@ -52,10 +52,10 @@ public class MatchSystem
         firstCard.DisableCard();
         secondCard.DisableCard();
 
-        if (firstCard.CardData == secondCard.CardData)
+        if (firstCard.ID == secondCard.ID)
         {
             matchedPairs++;
-            OnMatchFound?.Invoke(firstCard, secondCard);
+            OnMatchFound?.Invoke();
             AudioManager.Instance.PlaySound(MatchingCardsSound.Match);
             GameManager.Instance.StartRoutine(HideCardCoroutine());
 
@@ -65,7 +65,7 @@ public class MatchSystem
         else
         {
             AudioManager.Instance.PlaySound(MatchingCardsSound.Mismatch);
-            OnMismatch?.Invoke(firstCard, secondCard);
+            OnMismatch?.Invoke();
             GameManager.Instance.StartRoutine(FlipBackCoroutine());
         }
     }

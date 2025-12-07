@@ -2381,6 +2381,7 @@ MonoBehaviour:
   rowsTxt: {fileID: 1224111181}
   columnsTxt: {fileID: 980308711}
   errorTxt: {fileID: 357530468}
+  toggleBlindMode: {fileID: 843548413}
 --- !u!1 &1016748368
 GameObject:
   m_ObjectHideFlags: 0

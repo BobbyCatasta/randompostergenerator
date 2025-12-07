@@ -2,6 +2,7 @@ using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 /// <summary>
 /// Manages custom game mode settings and validation.
@@ -17,6 +18,9 @@ public class CustomMode : MonoBehaviour
     
     [Tooltip("Error message for invalid configurations.")]
     [SerializeField] private GameObject errorTxt;
+
+    [Tooltip("Toggle for selecting to start a game in Blind Mode.")]
+    [SerializeField] private Toggle toggleBlindMode;
 
     /// <summary>
     /// Coroutine for displaying error messages.
@@ -110,6 +114,7 @@ public class CustomMode : MonoBehaviour
             return;
         }
         GameBoot.IsNewGame = true;
+        GameBoot.IsBlindMode = toggleBlindMode.isOn;
         GameBoot.Rows = selectedRows;
         GameBoot.Columns = selectedColumns;
         SceneManager.LoadScene("GameScene");
@@ -123,13 +128,5 @@ public class CustomMode : MonoBehaviour
         errorTxt.SetActive(true);
         yield return new WaitForSecondsRealtime(1.5f);
         errorTxt.SetActive(false);
-    }
-
-    /// <summary>
-    /// Coroutine to display error message temporarily.
-    /// </summary>
-    public void OnChangeBlindMode(bool value)
-    {
-        GameBoot.IsBlindMode = value;
     }
 }
